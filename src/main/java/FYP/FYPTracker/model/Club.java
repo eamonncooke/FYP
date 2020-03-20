@@ -1,163 +1,201 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package FYP.FYPTracker.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
-import java.util.List;
-
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * The persistent class for the club database table.
- * 
+ *
+ * @author cooke
  */
 @Entity
-@NamedQuery(name="Club.findAll", query="SELECT c FROM Club c")
+@Table(name = "club")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Club.findAll", query = "SELECT c FROM Club c"),
+    @NamedQuery(name = "Club.findByClubId", query = "SELECT c FROM Club c WHERE c.clubId = :clubId"),
+    @NamedQuery(name = "Club.findByName", query = "SELECT c FROM Club c WHERE c.name = :name"),
+    @NamedQuery(name = "Club.findByStreet", query = "SELECT c FROM Club c WHERE c.street = :street"),
+    @NamedQuery(name = "Club.findByTown", query = "SELECT c FROM Club c WHERE c.town = :town"),
+    @NamedQuery(name = "Club.findByCounty", query = "SELECT c FROM Club c WHERE c.county = :county"),
+    @NamedQuery(name = "Club.findByContactName", query = "SELECT c FROM Club c WHERE c.contactName = :contactName"),
+    @NamedQuery(name = "Club.findByContactEmail", query = "SELECT c FROM Club c WHERE c.contactEmail = :contactEmail")})
 public class Club implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	private int clubId;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "clubId")
+    private Integer clubId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 30)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "street")
+    private String street;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 22)
+    @Column(name = "town")
+    private String town;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 9)
+    @Column(name = "county")
+    private String county;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "contactName")
+    private String contactName;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "contactEmail")
+    private String contactEmail;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clubId")
+    private Collection<Coach> coachCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clubId")
+    private Collection<Player> playerCollection;
 
-	private String city;
+    public Club() {
+    }
 
-	private String contactEmail;
+    public Club(Integer clubId) {
+        this.clubId = clubId;
+    }
 
-	private String contactName;
+    public Club(Integer clubId, String name, String street, String town, String county, String contactName, String contactEmail) {
+        this.clubId = clubId;
+        this.name = name;
+        this.street = street;
+        this.town = town;
+        this.county = county;
+        this.contactName = contactName;
+        this.contactEmail = contactEmail;
+    }
 
-	private String county;
-	
-	private String email;
-	
-	private String name;
+    public Integer getClubId() {
+        return clubId;
+    }
 
-	private String street;
+    public void setClubId(Integer clubId) {
+        this.clubId = clubId;
+    }
 
-	private String town;
+    public String getName() {
+        return name;
+    }
 
-	//bi-directional many-to-one association to Injury
-	@OneToMany(mappedBy="club")
-	private List<Injury> injuries;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	//bi-directional many-to-one association to Player
-	@OneToMany(mappedBy="club")
-	private List<Player> players;
+    public String getStreet() {
+        return street;
+    }
 
-	public Club() {
-	}
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
-	public int getClubId() {
-		return this.clubId;
-	}
+    public String getTown() {
+        return town;
+    }
 
-	public void setClubId(int clubId) {
-		this.clubId = clubId;
-	}
+    public void setTown(String town) {
+        this.town = town;
+    }
 
-	public String getCity() {
-		return this.city;
-	}
+    public String getCounty() {
+        return county;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public void setCounty(String county) {
+        this.county = county;
+    }
 
-	public String getContactEmail() {
-		return this.contactEmail;
-	}
+    public String getContactName() {
+        return contactName;
+    }
 
-	public void setContactEmail(String contactEmail) {
-		this.contactEmail = contactEmail;
-	}
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
 
-	public String getContactName() {
-		return this.contactName;
-	}
+    public String getContactEmail() {
+        return contactEmail;
+    }
 
-	public void setContactName(String contactName) {
-		this.contactName = contactName;
-	}
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
 
-	public String getCounty() {
-		return this.county;
-	}
+    @XmlTransient
+    public Collection<Coach> getCoachCollection() {
+        return coachCollection;
+    }
 
-	public void setCounty(String county) {
-		this.county = county;
-	}
+    public void setCoachCollection(Collection<Coach> coachCollection) {
+        this.coachCollection = coachCollection;
+    }
 
-	public String getEmail() {
-		return this.email;
-	}
+    @XmlTransient
+    public Collection<Player> getPlayerCollection() {
+        return playerCollection;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setPlayerCollection(Collection<Player> playerCollection) {
+        this.playerCollection = playerCollection;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (clubId != null ? clubId.hashCode() : 0);
+        return hash;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Club)) {
+            return false;
+        }
+        Club other = (Club) object;
+        if ((this.clubId == null && other.clubId != null) || (this.clubId != null && !this.clubId.equals(other.clubId))) {
+            return false;
+        }
+        return true;
+    }
 
-	public String getStreet() {
-		return this.street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public String getTown() {
-		return this.town;
-	}
-
-	public void setTown(String town) {
-		this.town = town;
-	}
-
-	public List<Injury> getInjuries() {
-		return this.injuries;
-	}
-
-	public void setInjuries(List<Injury> injuries) {
-		this.injuries = injuries;
-	}
-
-	public Injury addInjury(Injury injury) {
-		getInjuries().add(injury);
-		injury.setClub(this);
-
-		return injury;
-	}
-
-	public Injury removeInjury(Injury injury) {
-		getInjuries().remove(injury);
-		injury.setClub(null);
-
-		return injury;
-	}
-
-	public List<Player> getPlayers() {
-		return this.players;
-	}
-
-	public void setPlayers(List<Player> players) {
-		this.players = players;
-	}
-
-	public Player addPlayer(Player player) {
-		getPlayers().add(player);
-		player.setClub(this);
-
-		return player;
-	}
-
-	public Player removePlayer(Player player) {
-		getPlayers().remove(player);
-		player.setClub(null);
-
-		return player;
-	}
-
+    @Override
+    public String toString() {
+        return "FYP.FYPTracker.model.Club[ clubId=" + clubId + " ]";
+    }
+    
 }

@@ -1,65 +1,129 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package FYP.FYPTracker.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
-
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The persistent class for the testing database table.
- * 
+ *
+ * @author cooke
  */
 @Entity
-@NamedQuery(name="Testing.findAll", query="SELECT t FROM Testing t")
+@Table(name = "testing")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Testing.findAll", query = "SELECT t FROM Testing t"),
+    @NamedQuery(name = "Testing.findByTestId", query = "SELECT t FROM Testing t WHERE t.testId = :testId"),
+    @NamedQuery(name = "Testing.findByTime", query = "SELECT t FROM Testing t WHERE t.time = :time"),
+    @NamedQuery(name = "Testing.findByDate", query = "SELECT t FROM Testing t WHERE t.date = :date")})
 public class Testing implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	private int testId;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "testId")
+    private Integer testId;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "time")
+    private int time;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "date")
+    @Temporal(TemporalType.DATE)
+    private Date date;
+    @JoinColumn(name = "playerID", referencedColumnName = "playerId")
+    @ManyToOne(optional = false)
+    private Player playerID;
 
-	@Temporal(TemporalType.DATE)
-	private Date date;
+    public Testing() {
+    }
 
-	private int time;
+    public Testing(Integer testId) {
+        this.testId = testId;
+    }
 
-	//bi-directional many-to-one association to Player
-	@ManyToOne
-	@JoinColumn(name="playerID")
-	private Player player;
+    public Testing(Integer testId, int time, Date date) {
+        this.testId = testId;
+        this.time = time;
+        this.date = date;
+    }
 
-	public Testing() {
-	}
+    public Integer getTestId() {
+        return testId;
+    }
 
-	public int getTestId() {
-		return this.testId;
-	}
+    public void setTestId(Integer testId) {
+        this.testId = testId;
+    }
 
-	public void setTestId(int testId) {
-		this.testId = testId;
-	}
+    public int getTime() {
+        return time;
+    }
 
-	public Date getDate() {
-		return this.date;
-	}
+    public void setTime(int time) {
+        this.time = time;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	
-	public int getTime() {
-		return this.time;
-	}
+    public Date getDate() {
+        return date;
+    }
 
-	public void setTime(int time) {
-		this.time = time;
-	}
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
-	public Player getPlayer() {
-		return this.player;
-	}
+    public Player getPlayerID() {
+        return playerID;
+    }
 
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
+    public void setPlayerID(Player playerID) {
+        this.playerID = playerID;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (testId != null ? testId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Testing)) {
+            return false;
+        }
+        Testing other = (Testing) object;
+        if ((this.testId == null && other.testId != null) || (this.testId != null && !this.testId.equals(other.testId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "FYP.FYPTracker.model.Testing[ testId=" + testId + " ]";
+    }
+    
 }

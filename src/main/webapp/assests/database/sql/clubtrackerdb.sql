@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 20, 2020 at 06:42 PM
+-- Generation Time: Mar 20, 2020 at 07:54 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.2
 
@@ -32,6 +32,15 @@ CREATE TABLE `authuserrole` (
   `authUserId` int(11) NOT NULL,
   `authRoleId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `authuserrole`
+--
+
+INSERT INTO `authuserrole` (`authUserId`, `authRoleId`) VALUES
+(1, 1),
+(2, 3),
+(3, 2);
 
 -- --------------------------------------------------------
 
@@ -74,7 +83,9 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`authUserId`, `firstName`, `surname`, `email`, `password`, `status`) VALUES
-(1, 'Eamonn', 'Cooke', 'eamonncooke@gmail.com', '$2a$10$DD/FQ0hTIprg3fGarZl1reK1f7tzgM4RuFKjAKyun0Si60w6g3v5i', 'VERIFIED');
+(1, 'Eamonn', 'Cooke', 'eamonncooke@gmail.com', '$2a$10$DD/FQ0hTIprg3fGarZl1reK1f7tzgM4RuFKjAKyun0Si60w6g3v5i', 'VERIFIED'),
+(2, 'Eamonn', 'Cooke', 'cooke.eamonn@gmail.com', '$2a$10$DD/FQ0hTIprg3fGarZl1reK1f7tzgM4RuFKjAKyun0Si60w6g3v5i', 'VERIFIED'),
+(3, 'Ken', 'Carter', 'coach@gmail.com', '$2a$10$DD/FQ0hTIprg3fGarZl1reK1f7tzgM4RuFKjAKyun0Si60w6g3v5i', 'VERIFIED');
 
 -- --------------------------------------------------------
 
@@ -112,6 +123,13 @@ CREATE TABLE `coach` (
   `clubId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `coach`
+--
+
+INSERT INTO `coach` (`coachId`, `authUserId`, `role`, `clubId`) VALUES
+(1, 3, 'Head Coach', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -124,10 +142,17 @@ CREATE TABLE `player` (
   `postion` varchar(8) NOT NULL,
   `dob` date NOT NULL,
   `height` int(11) NOT NULL,
-  `weight` int(11) NOT NULL,
+  `weight` float NOT NULL,
   `clubId` int(11) NOT NULL,
   `authId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `player`
+--
+
+INSERT INTO `player` (`playerId`, `authUserId`, `postion`, `dob`, `height`, `weight`, `clubId`, `authId`) VALUES
+(1, 2, 'Forward', '1994-01-17', 180, 104.3, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -189,14 +214,16 @@ ALTER TABLE `club`
 --
 ALTER TABLE `coach`
   ADD PRIMARY KEY (`coachId`),
-  ADD KEY `authUserId` (`authUserId`);
+  ADD KEY `authUserId` (`authUserId`),
+  ADD KEY `clubId` (`clubId`);
 
 --
 -- Indexes for table `player`
 --
 ALTER TABLE `player`
   ADD PRIMARY KEY (`playerId`),
-  ADD KEY `authUserId` (`authUserId`);
+  ADD KEY `authUserId` (`authUserId`),
+  ADD KEY `clubId` (`clubId`);
 
 --
 -- Indexes for table `testing`
@@ -226,7 +253,7 @@ ALTER TABLE `auth_role`
 -- AUTO_INCREMENT for table `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `authUserId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `authUserId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `club`
@@ -238,13 +265,13 @@ ALTER TABLE `club`
 -- AUTO_INCREMENT for table `coach`
 --
 ALTER TABLE `coach`
-  MODIFY `coachId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `coachId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `player`
 --
 ALTER TABLE `player`
-  MODIFY `playerId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `playerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `testing`
@@ -273,25 +300,29 @@ ALTER TABLE `authuserrole`
 -- Constraints for table `coach`
 --
 ALTER TABLE `coach`
-  ADD CONSTRAINT `coach_ibfk_1` FOREIGN KEY (`authUserId`) REFERENCES `auth_user` (`authUserId`);
+  ADD CONSTRAINT `coach_ibfk_1` FOREIGN KEY (`authUserId`) REFERENCES `auth_user` (`authUserId`),
+  ADD CONSTRAINT `coach_ibfk_2` FOREIGN KEY (`clubId`) REFERENCES `club` (`clubId`);
 
 --
 -- Constraints for table `player`
 --
 ALTER TABLE `player`
-  ADD CONSTRAINT `player_ibfk_1` FOREIGN KEY (`authUserId`) REFERENCES `auth_user` (`authUserId`);
+  ADD CONSTRAINT `player_ibfk_1` FOREIGN KEY (`authUserId`) REFERENCES `auth_user` (`authUserId`),
+  ADD CONSTRAINT `player_ibfk_2` FOREIGN KEY (`clubId`) REFERENCES `club` (`clubId`);
 
 --
 -- Constraints for table `testing`
 --
 ALTER TABLE `testing`
-  ADD CONSTRAINT `testing_ibfk_1` FOREIGN KEY (`playerID`) REFERENCES `trackerforclub`.`player` (`playerId`);
+  ADD CONSTRAINT `testing_ibfk_1` FOREIGN KEY (`playerID`) REFERENCES `trackerforclub`.`player` (`playerId`),
+  ADD CONSTRAINT `testing_ibfk_2` FOREIGN KEY (`playerID`) REFERENCES `player` (`playerId`);
 
 --
 -- Constraints for table `training`
 --
 ALTER TABLE `training`
-  ADD CONSTRAINT `training_ibfk_1` FOREIGN KEY (`playerID`) REFERENCES `trackerforclub`.`player` (`playerId`);
+  ADD CONSTRAINT `training_ibfk_1` FOREIGN KEY (`playerID`) REFERENCES `trackerforclub`.`player` (`playerId`),
+  ADD CONSTRAINT `training_ibfk_2` FOREIGN KEY (`playerID`) REFERENCES `player` (`playerId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

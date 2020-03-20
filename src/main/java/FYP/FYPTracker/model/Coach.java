@@ -1,68 +1,124 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package FYP.FYPTracker.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
-
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The persistent class for the player database table.
- * 
+ *
+ * @author cooke
  */
 @Entity
-@NamedQuery(name="Coach.findAll", query="SELECT c FROM Coach c")
+@Table(name = "coach")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Coach.findAll", query = "SELECT c FROM Coach c"),
+    @NamedQuery(name = "Coach.findByCoachId", query = "SELECT c FROM Coach c WHERE c.coachId = :coachId"),
+    @NamedQuery(name = "Coach.findByRole", query = "SELECT c FROM Coach c WHERE c.role = :role")})
 public class Coach implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	private int coachId;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "coachId")
+    private Integer coachId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 20)
+    @Column(name = "role")
+    private String role;
+    @JoinColumn(name = "authUserId", referencedColumnName = "authUserId")
+    @ManyToOne(optional = false)
+    private AuthUser authUserId;
+    @JoinColumn(name = "clubId", referencedColumnName = "clubId")
+    @ManyToOne(optional = false)
+    private Club clubId;
 
-	private String role;
+    public Coach() {
+    }
 
-	//bi-directional many-to-one association to AuthUser
-	@ManyToOne
-	@JoinColumn(name="authUserId")
-	private AuthUser authUser;
+    public Coach(Integer coachId) {
+        this.coachId = coachId;
+    }
 
-	//bi-directional many-to-one association to Club
-	@ManyToOne
-	@JoinColumn(name="clubId")
-	private Club club;
+    public Coach(Integer coachId, String role) {
+        this.coachId = coachId;
+        this.role = role;
+    }
 
-	public Coach() {
-	}
+    public Integer getCoachId() {
+        return coachId;
+    }
 
-	public int getCoachId() {
-		return this.coachId;
-	}
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
+    }
 
-	public void setCoachId(int coachId) {
-		this.coachId = coachId;
-	}
+    public String getRole() {
+        return role;
+    }
 
-	public String getRole() {
-		return this.role;
-	}
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public AuthUser getAuthUserId() {
+        return authUserId;
+    }
 
-	public AuthUser getAuthUser() {
-		return this.authUser;
-	}
+    public void setAuthUserId(AuthUser authUserId) {
+        this.authUserId = authUserId;
+    }
 
-	public void setAuthUser(AuthUser authUser) {
-		this.authUser = authUser;
-	}
+    public Club getClubId() {
+        return clubId;
+    }
 
-	public Club getClub() {
-		return this.club;
-	}
+    public void setClubId(Club clubId) {
+        this.clubId = clubId;
+    }
 
-	public void setClub(Club club) {
-		this.club = club;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (coachId != null ? coachId.hashCode() : 0);
+        return hash;
+    }
 
-	
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Coach)) {
+            return false;
+        }
+        Coach other = (Coach) object;
+        if ((this.coachId == null && other.coachId != null) || (this.coachId != null && !this.coachId.equals(other.coachId))) {
+            return false;
+        }
+        return true;
+    }
 
+    @Override
+    public String toString() {
+        return "FYP.FYPTracker.model.Coach[ coachId=" + coachId + " ]";
+    }
+    
 }
